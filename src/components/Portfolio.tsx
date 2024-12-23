@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Card,
-  CardContent,
   Typography,
   CircularProgress,
-  Button,
   Box,
+  Grid,
 } from '@mui/material';
 import { USERS_URL, POSTS_URL } from '../constants';
+import PostCard from './PostCard';
+import UserInfo from './UserInfo';
 
 interface Freelancer {
   id: number;
@@ -36,19 +36,26 @@ const Portfolio: React.FC = () => {
     const fetchData = async () => {
       try {
         const freelancerResponse = await axios.get(USERS_URL);
-        const user = freelancerResponse.data;
+        console.log("freelancerResponse:", freelancerResponse);
+        const users = freelancerResponse.data;
 
-        setFreelancer({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          website: user.website,
-          city: user.address.city,
-        });
+        const user = users.find((u: any) => u.id === parseInt(id!));
+
+        if (user) {
+          setFreelancer({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            website: user.website,
+            city: user.address?.city,
+          });
+        } else {
+          setFreelancer(null);
+        }
 
         const postsResponse = await axios.get(POSTS_URL);
-        setPosts(postsResponse.data);
+        setPosts(postsResponse.data.filter((post: any) => post.userId === parseInt(id!))); // Freelancer'ın postlarını filtrele
       } catch (error) {
         console.error(error);
       } finally {
@@ -59,40 +66,41 @@ const Portfolio: React.FC = () => {
     fetchData();
   }, [id]);
 
+  const handleShowComments = (postId: number) => {
+    alert(`Fetching comments for post ${postId}`);
+  };
+
   if (loading) return <CircularProgress />;
 
   if (!freelancer) return <Typography>No Freelancer Found</Typography>;
 
   return (
-    <Box padding={2}>
-      <Card sx={{ marginBottom: 2 }}>
-        <CardContent>
-          <Typography variant="h4">{freelancer.name}</Typography>
-          <Typography>Email: {freelancer.email}</Typography>
-          <Typography>Phone: {freelancer.phone}</Typography>
-          <Typography>Website: {freelancer.website}</Typography>
-          <Typography>City: {freelancer.city}</Typography>
-        </CardContent>
-      </Card>
+    <Box padding={5}>
+      <UserInfo
+        name={freelancer.name}
+        email={freelancer.email}
+        phone={freelancer.phone}
+        website={freelancer.website}
+        photo={`https://i.pravatar.cc/150?img=${freelancer.id}`}
+      />
 
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" sx={{ textAlign: 'center', fontWeight: 'bold', margin: "36px"}} gutterBottom>
         Past Jobs
       </Typography>
-      {posts.map((post) => (
-        <Card key={post.id} sx={{ marginBottom: 2 }}>
-          <CardContent>
-            <Typography variant="h6">{post.title}</Typography>
-            <Typography>{post.body}</Typography>
-            <Button
-              variant="outlined"
-              sx={{ marginTop: 1 }}
-              onClick={() => alert(`Fetching comments for post ${post.id}`)}
-            >
-              Show Comments
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
+
+      <Grid container spacing={3}>
+        {posts.map((post) => (
+          <Grid item xs={12} sm={6} md={4} key={freelancer.id}>
+            <PostCard
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              body={post.body}
+              onShowComments={handleShowComments}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   );
 };
