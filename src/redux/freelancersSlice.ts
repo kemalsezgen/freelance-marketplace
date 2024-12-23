@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
-const baseURL: string = "https://jsonplaceholder.typicode.com";
-const avatarURL: string = "https://i.pravatar.cc/150?img=";
+import { USERS_URL, POSTS_URL, MOCK_IMAGE_URL } from '../constants';
 
 interface Freelancer {
   id: number;
@@ -27,15 +25,25 @@ const initialState: FreelancerState = {
 };
 
 export const fetchFreelancers = createAsyncThunk('freelancers/fetchFreelancers', async () => {
-  const response = await axios.get(baseURL + '/users');
-  return response.data.map((user: any) => ({
+  const usersResponse = await axios.get(USERS_URL);
+  const users = usersResponse.data;
+
+  const postsResponse = await axios.get(POSTS_URL);
+  const posts = postsResponse.data;
+
+  const finishedJobsMap: Record<number, number> = posts.reduce((acc: any, post: any) => {
+    acc[post.userId] = (acc[post.userId] || 0) + 1;
+    return acc;
+  }, {});
+
+  return users.map((user: any) => ({
     id: user.id,
     name: user.name,
     email: user.email,
     phone: user.phone,
     city: user.address.city,
-    finishedJobs: Math.floor(Math.random() * 50),
-    photo: avatarURL + `${user.id}`,
+    finishedJobs: finishedJobsMap[user.id] || 0,
+    photo: MOCK_IMAGE_URL + `${user.id}`, 
   }));
 });
 
