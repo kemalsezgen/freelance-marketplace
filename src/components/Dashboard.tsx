@@ -9,8 +9,6 @@ import {
   Box,
   Typography,
   TextField,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 
 const Dashboard: React.FC = () => {
@@ -21,9 +19,6 @@ const Dashboard: React.FC = () => {
   const [jobCountMin, setJobCountMin] = useState('');
   const [jobCountMax, setJobCountMax] = useState('');
   const [citySearch, setCitySearch] = useState('');
-
-  const theme = useTheme();
-  const isXsScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     dispatch(fetchFreelancers());
@@ -56,7 +51,7 @@ const Dashboard: React.FC = () => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        flexDirection={isXsScreen ? 'column' : 'row'}
+        flexDirection={{ xs: "column", sm: "column", md: "row"}}
         sx={{
           width: '100%',
           maxWidth: '800px',
