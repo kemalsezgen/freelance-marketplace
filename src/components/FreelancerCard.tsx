@@ -66,7 +66,9 @@ const FreelancerCard: React.FC<Props> = ({ freelancer }) => {
 
         <Box display="flex" alignItems="center" marginBottom={2}>
           <CheckCircleOutlineIcon sx={ICON_STYLES} />
-          <Typography sx={ICON_TEXT_STYLES}>{freelancer.finishedJobs}</Typography>
+          <Typography sx={ICON_TEXT_STYLES}>
+            {freelancer.finishedJobs > 1 ? `${freelancer.finishedJobs} jobs` : `${freelancer.finishedJobs} job`}
+            </Typography>
         </Box>
 
         <Button
