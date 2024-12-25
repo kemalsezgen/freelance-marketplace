@@ -4,17 +4,16 @@ import EmailIcon from '@mui/icons-material/Email';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CallIcon from '@mui/icons-material/Call';
 
-import { Card, CardContent, Typography, Avatar, Button, Box, Link } from '@mui/material';
-import { ROUTES, COLOURS } from '../constants';
+import { Card, CardContent, Typography, Avatar, Box } from '@mui/material';
+import { ROUTES } from '../constants';
+import { useNavigate } from 'react-router-dom';
 
 const ICON_STYLES = {
-  color: COLOURS.DARK_BLUE,
   marginRight: 1,
   fontSize: { xs: '16px', sm: '18px' }
 }
 
 const ICON_TEXT_STYLES = {
-  color: COLOURS.DARK_BLUE,
   fontSize: { xs: '16px', sm: '16px' }
 }
 
@@ -33,20 +32,29 @@ interface Props {
 }
 
 const FreelancerCard: React.FC<Props> = ({ freelancer }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(ROUTES.PORTFOLIO(freelancer.id));
+  };
+  
   return (
-    <Card>
+    <Card onClick={handleCardClick} sx={{
+      cursor: 'pointer',
+      '&:hover': {
+        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+      },
+    }}>
       <CardContent>
-        <Box display="flex" alignItems="center" marginBottom={2}>
+        <Box display="flex" alignItems="center" marginBottom={2} gap={2}>
           <Avatar
             src={freelancer.photo}
             alt={freelancer.name}
-            sx={{ marginRight: 2, width: 56, height: 56 }}
+            sx={{ width: 56, height: 56 }}
           />
-          <Link href={ROUTES.PORTFOLIO(freelancer.id)} underline="none" sx={{ color: 'inherit' }}>
-            <Typography variant="h6" component="span" sx={{fontSize: { xs: '24px', sm: '20px' }}}>
-              {freelancer.name}
-            </Typography>
-          </Link>
+          <Typography variant="h6" component="span" sx={{ fontSize: { xs: '24px', sm: '20px' } }}>
+            {freelancer.name}
+          </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" marginBottom={1}>
@@ -68,16 +76,8 @@ const FreelancerCard: React.FC<Props> = ({ freelancer }) => {
           <CheckCircleOutlineIcon sx={ICON_STYLES} />
           <Typography sx={ICON_TEXT_STYLES}>
             {freelancer.finishedJobs > 1 ? `${freelancer.finishedJobs} jobs` : `${freelancer.finishedJobs} job`}
-            </Typography>
+          </Typography>
         </Box>
-
-        <Button
-          variant="contained"
-          color="primary"
-          href={ROUTES.PORTFOLIO(freelancer.id)}
-        >
-          Portfolio
-        </Button>
       </CardContent>
     </Card>
   );

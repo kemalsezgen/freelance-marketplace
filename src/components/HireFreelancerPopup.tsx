@@ -10,8 +10,9 @@ import {
   Typography,
 } from '@mui/material';
 import { COLOURS } from '../constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { hireFreelancer } from '../redux/freelancersSlice';
+import { RootState } from '../redux/store';
 
 interface HireFreelancerPopupProps {
   open: boolean;
@@ -21,6 +22,8 @@ interface HireFreelancerPopupProps {
 
 const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose, freelancerId }) => {
   const [form, setForm] = useState({ name: '', subject: '', message: '' });
+  const mode = useSelector((state: RootState) => state.theme.mode);
+
   const dispatch = useDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,7 +41,6 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle
         sx={{
-          color: COLOURS.DARK_BLUE,
           fontWeight: 'bold',
           fontSize: '1.5rem',
           textAlign: 'center',
@@ -54,13 +56,12 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Typography
             sx={{
-              color: COLOURS.DARK_BLUE,
               fontWeight: 'bold',
               fontSize: '1rem',
               marginBottom: 1,
             }}
           >
-            Please fill out the form below:
+            Fill out the form below to hire:
           </Typography>
           <TextField
             label="Your Name"
@@ -68,19 +69,6 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
             value={form.name}
             onChange={handleChange}
             fullWidth
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: COLOURS.DARK_BLUE,
-                },
-                '&:hover fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-              },
-            }}
           />
           <TextField
             label="Subject"
@@ -88,19 +76,6 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
             value={form.subject}
             onChange={handleChange}
             fullWidth
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: COLOURS.DARK_BLUE,
-                },
-                '&:hover fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-              },
-            }}
           />
           <TextField
             label="Message"
@@ -110,34 +85,17 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
             fullWidth
             multiline
             rows={4}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: COLOURS.DARK_BLUE,
-                },
-                '&:hover fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: COLOURS.GREEN,
-                },
-              },
-            }}
           />
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center', gap: 2, padding: 3 }}>
         <Button
           onClick={onClose}
-          variant="outlined"
+          variant="contained"
           sx={{
-            borderColor: COLOURS.DARK_BLUE,
-            color: COLOURS.DARK_BLUE,
+            color: COLOURS.WHITE,
             textTransform: 'none',
-            '&:hover': {
-              borderColor: COLOURS.GREEN,
-              backgroundColor: 'rgba(15, 181, 108, 0.1)',
-            },
+            backgroundColor: COLOURS.RED
           }}
         >
           Cancel
@@ -146,12 +104,8 @@ const HireFreelancerPopup: React.FC<HireFreelancerPopupProps> = ({ open, onClose
           onClick={handleSubmit}
           variant="contained"
           sx={{
-            backgroundColor: COLOURS.GREEN,
             color: 'white',
             textTransform: 'none',
-            '&:hover': {
-              backgroundColor: 'rgba(15, 181, 108, 0.9)',
-            },
           }}
         >
           Submit

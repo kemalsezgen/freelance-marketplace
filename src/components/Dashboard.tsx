@@ -9,16 +9,21 @@ import {
   Box,
   Typography,
   TextField,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { freelancers, loading, error } = useSelector((state: RootState) => state.freelancers);
+  const { freelancers, loading, error, savedFreelancers } = useSelector((state: RootState) => state.freelancers);
 
   const [nameSearch, setNameSearch] = useState('');
   const [jobCountMin, setJobCountMin] = useState('');
   const [jobCountMax, setJobCountMax] = useState('');
   const [citySearch, setCitySearch] = useState('');
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
 
   useEffect(() => {
     console.log("freelancers", freelancers);
@@ -37,9 +42,14 @@ const Dashboard: React.FC = () => {
       (jobCountMin === '' || freelancer.finishedJobs >= parseInt(jobCountMin)) &&
       (jobCountMax === '' || freelancer.finishedJobs <= parseInt(jobCountMax));
     const matchesCity = freelancer.city.toLowerCase().includes(citySearch.toLowerCase());
+    const matchesSaved = !showSavedOnly || savedFreelancers.some((saved) => saved.id === freelancer.id);
 
-    return matchesName && matchesJobCount && matchesCity;
+    return matchesName && matchesJobCount && matchesCity && matchesSaved;
   });
+
+  const handleToggleSavedOnly = () => {
+    setShowSavedOnly(!showSavedOnly);
+  };
 
   return (
     <Box padding={3}>
@@ -55,7 +65,7 @@ const Dashboard: React.FC = () => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        flexDirection={{ xs: "column", sm: "column", md: "row"}}
+        flexDirection={{ xs: "column", sm: "column", md: "row" }}
         sx={{
           width: '100%',
           maxWidth: '800px',
@@ -63,6 +73,20 @@ const Dashboard: React.FC = () => {
           gap: 2,
         }}
       >
+        <Box
+          display="flex"
+          alignItems="center"
+        >
+          <Tooltip title={showSavedOnly ? 'Show All Freelancers' : 'Show Saved Freelancers'}>
+            <IconButton onClick={handleToggleSavedOnly}>
+              {showSavedOnly ? (
+                <TurnedInIcon sx={{ color: 'green', fontSize: 32 }} />
+              ) : (
+                <TurnedInNotIcon sx={{ color: 'gray', fontSize: 32 }} />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Box>
         <TextField
           label="Name"
           placeholder="Search by name"
@@ -108,7 +132,7 @@ const Dashboard: React.FC = () => {
       </Grid>
 
       {filteredFreelancers.length === 0 && (
-        <Typography variant="h6" sx={{ marginTop: 3, color: 'gray' }}>
+        <Typography variant="h6" sx={{ marginTop: 3 }}>
           No freelancers found matching your criteria.
         </Typography>
       )}

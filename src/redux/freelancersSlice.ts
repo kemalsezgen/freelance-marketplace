@@ -16,6 +16,7 @@ interface Freelancer {
 interface FreelancerState {
   freelancers: Freelancer[];
   hiredFreelancers: Freelancer[];
+  savedFreelancers: Freelancer[];
   loading: boolean;
   error: string | null;
 }
@@ -23,6 +24,7 @@ interface FreelancerState {
 const initialState: FreelancerState = {
   freelancers: [],
   hiredFreelancers: [],
+  savedFreelancers: [],
   loading: false,
   error: null,
 };
@@ -56,10 +58,7 @@ const freelancersSlice = createSlice({
   reducers: {
     hireFreelancer: (state, action) => {
       const freelancer = state.freelancers.find((f) => f.id === action.payload);
-      if (!freelancer) {
-        console.error(`Freelancer with ID ${action.payload} not found.`);
-        return;
-      }
+      if (!freelancer) return;
 
       const isAlreadyHired = state.hiredFreelancers.some((f) => f.id === freelancer.id);
 
@@ -69,15 +68,24 @@ const freelancersSlice = createSlice({
     },
     fireFreelancer: (state, action) => {
       const freelancer = state.freelancers.find((f) => f.id === action.payload);
-      if (!freelancer) {
-        console.error(`Freelancer with ID ${action.payload} not found.`);
-        return;
-      }
+      if (!freelancer) return;
+
       const isAlreadyHired = state.hiredFreelancers.some((f) => f.id === freelancer.id);
       if (isAlreadyHired) {
         state.hiredFreelancers = state.hiredFreelancers.filter((f) => f.id !== freelancer.id);
       }
-    }
+    },
+    toggleSaveFreelancer: (state, action) => {
+      const freelancer = state.freelancers.find((f) => f.id === action.payload);
+      if (!freelancer) return;
+
+      const isAlreadySaved = state.savedFreelancers.some((f) => f.id === freelancer.id);
+      if (isAlreadySaved) {
+        state.savedFreelancers = state.savedFreelancers.filter((f) => f.id !== freelancer.id);
+      } else {
+        state.savedFreelancers.push(freelancer);
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -97,5 +105,5 @@ const freelancersSlice = createSlice({
   },
 });
 
-export const { hireFreelancer, fireFreelancer } = freelancersSlice.actions;
+export const { hireFreelancer, fireFreelancer, toggleSaveFreelancer } = freelancersSlice.actions;
 export default freelancersSlice.reducer;
