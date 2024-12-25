@@ -1,3 +1,4 @@
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { USERS_URL, POSTS_URL, MOCK_IMAGE_URL } from '../constants';
@@ -14,12 +15,14 @@ interface Freelancer {
 
 interface FreelancerState {
   freelancers: Freelancer[];
+  hiredFreelancers: Freelancer[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: FreelancerState = {
   freelancers: [],
+  hiredFreelancers: [],
   loading: false,
   error: null,
 };
@@ -43,14 +46,40 @@ export const fetchFreelancers = createAsyncThunk('freelancers/fetchFreelancers',
     phone: user.phone,
     city: user.address.city,
     finishedJobs: finishedJobsMap[user.id] || 0,
-    photo: MOCK_IMAGE_URL + `${user.id}`, 
+    photo: MOCK_IMAGE_URL + `${user.id}`,
   }));
 });
 
 const freelancersSlice = createSlice({
   name: 'freelancers',
   initialState,
-  reducers: {},
+  reducers: {
+    hireFreelancer: (state, action) => {
+      const freelancer = state.freelancers.find((f) => f.id === action.payload);
+      if (!freelancer) {
+        console.error(`Freelancer with ID ${action.payload} not found.`);
+        return;
+      }
+
+      const isAlreadyHired = state.hiredFreelancers.some((f) => f.id === freelancer.id);
+
+      if (!isAlreadyHired) {
+        state.hiredFreelancers.push(freelancer);
+      }
+    },
+    fireFreelancer: (state, action) => {
+      const freelancer = state.freelancers.find((f) => f.id === action.payload);
+      if (!freelancer) {
+        console.error(`Freelancer with ID ${action.payload} not found.`);
+        return;
+      }
+      const isAlreadyHired = state.hiredFreelancers.some((f) => f.id === freelancer.id);
+      if (isAlreadyHired) {
+        state.hiredFreelancers = state.hiredFreelancers.filter((f) => f.id !== freelancer.id);
+      }
+    }
+  },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchFreelancers.pending, (state) => {
@@ -68,4 +97,5 @@ const freelancersSlice = createSlice({
   },
 });
 
+export const { hireFreelancer, fireFreelancer } = freelancersSlice.actions;
 export default freelancersSlice.reducer;

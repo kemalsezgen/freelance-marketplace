@@ -43,7 +43,6 @@ const Portfolio: React.FC = () => {
     const fetchData = async () => {
       try {
         const freelancerResponse = await axios.get(USERS_URL);
-        console.log("freelancerResponse:", freelancerResponse);
         const users = freelancerResponse.data;
 
         const user = users.find((u: any) => u.id === parseInt(id!));
@@ -62,7 +61,7 @@ const Portfolio: React.FC = () => {
         }
 
         const postsResponse = await axios.get(POSTS_URL);
-        setPosts(postsResponse.data.filter((post: any) => post.userId === parseInt(id!))); // Freelancer'ın postlarını filtrele
+        setPosts(postsResponse.data.filter((post: any) => post.userId === parseInt(id!)));
 
         const commentsResponse = await axios.get(COMMENTS_URL);
         setComments(commentsResponse.data);
@@ -83,6 +82,7 @@ const Portfolio: React.FC = () => {
   return (
     <Box padding={5}>
       <UserInfo
+        id={freelancer.id}
         name={freelancer.name}
         email={freelancer.email}
         phone={freelancer.phone}
@@ -99,7 +99,7 @@ const Portfolio: React.FC = () => {
           const postComments = comments.filter((comment) => comment.postId === post.id);
           return (
             (
-              <Grid item xs={12} sm={6} md={4} key={freelancer.id}>
+              <Grid item xs={12} sm={6} md={4} key={post.id}>
                 <PostCard
                   key={post.id}
                   id={post.id}

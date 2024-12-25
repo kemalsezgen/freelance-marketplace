@@ -21,6 +21,10 @@ const Dashboard: React.FC = () => {
   const [citySearch, setCitySearch] = useState('');
 
   useEffect(() => {
+    console.log("freelancers", freelancers);
+  }, [freelancers]);
+
+  useEffect(() => {
     dispatch(fetchFreelancers());
   }, [dispatch]);
 
